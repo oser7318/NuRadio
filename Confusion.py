@@ -32,8 +32,11 @@ category_predictions = model.predict(dataset_val, batch_size=batch_size)
 
 print('Raw prediction values:')
 
-for i in category_predictions:
-    print(i)
+for i in range(5):
+    print(category_predictions(i))
 
 print('np.argmax on prediction values:')
 category_predictions = np.argmax(category_predictions, axis=1)
+
+for j in range(5):
+    print(category_predictions(i))
