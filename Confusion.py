@@ -20,9 +20,9 @@ model=keras.models.load_model('/mnt/md0/analysis/flavor/01/saved_models/T01/mode
 
 #Load data and labels
 
-i_file = list_of_file_ids_val
+#i_file = list_of_file_ids_val
 
-valdata, val_label_onehot = load_file(i_file)
+#valdata, val_label_onehot = load_file(i_file)
 
 
 #Recreate validation data
@@ -34,10 +34,15 @@ dataset_val = tf.data.Dataset.range(n_files_val).prefetch(n_batches_per_file * 1
         num_parallel_calls=2,
         deterministic=False)
 
+#Print some data
+for j in range(5):
+    print(dataset_val[i:1])
+    
 #Let model make predictions on validation dataset
 category_predictions = model.predict(dataset_val, batch_size=batch_size)
 
 print('Raw prediction values:')
+
 for i in category_predictions:
     print(i)
 
