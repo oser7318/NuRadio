@@ -17,11 +17,11 @@ from sklearn.metrics import confusion_matrix
 
 
 
-#Load data and labels
+#Load data file
 
-#i_file = list_of_file_ids_val
+i_file = int(list_of_file_ids_val)
 
-#valdata, val_label_onehot = load_file(i_file)
+valdata, val_label_onehot = load_file(i_file)
 
 
 #Recreate validation data
