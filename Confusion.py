@@ -23,19 +23,19 @@ i_file = int(list_of_file_ids_val)
 
 valdata, val_label_onehot = load_file(i_file)
 
+#Print some labels
+for k in range(5):
+    print(val_label_onehot(k))
+
 
 #Recreate validation data
 n_batches_per_file=n_events_per_file//batch_size
 
-dataset_val = tf.data.Dataset.range(n_files_val).prefetch(n_batches_per_file * 10).interleave(
-        ValDataset,
-        cycle_length=2,
-        num_parallel_calls=2,
-        deterministic=False)
-
-#Print some data
-for j in range(5):
-    print(dataset_val[j:1])
+#dataset_val = tf.data.Dataset.range(n_files_val).prefetch(n_batches_per_file * 10).interleave(
+#        ValDataset,
+#        cycle_length=2,
+#        num_parallel_calls=2,
+#        deterministic=False)
 
 #Load saved model
 #model=keras.models.load_model('/mnt/md0/analysis/flavor/01/saved_models/T01/model_best.h5')
