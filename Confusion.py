@@ -21,7 +21,7 @@ from sklearn.metrics import confusion_matrix
 
 i_file = int(list_of_file_ids_val)
 
-valdata, val_label_onehot = load_file(i_file)
+valdata, val_label_onehot = ValDataset
 
 #Print some labels
 for k in range(5):
