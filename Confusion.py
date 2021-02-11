@@ -50,7 +50,7 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     
-    plt.savefig(f'{title}.png')
+    plt.savefig('Confusion_Matrix.png')
 #Recreate validation data
 n_batches_per_file=n_events_per_file//batch_size
 
