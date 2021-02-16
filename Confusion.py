@@ -61,15 +61,15 @@ val_data, true_category = load_file(i_file)
 
 true_category=np.argmax(true_category,axis=1)
 
-comp_true_category = true_category[0:10000]
-comp_predicted_category = category_predictions[0:10000]
-
 #Load saved model
 model=keras.models.load_model('/mnt/md0/analysis/flavor/01/saved_models/T01/model_best.h5')
 
 #Let model make predictions on validation dataset
 category_predictions = model.predict(val_data, batch_size=batch_size)
 category_predictions = np.argmax(category_predictions, axis=1)
+
+comp_true_category = true_category[0:10000]
+comp_predicted_category = category_predictions[0:10000]
 
 #Extract the true category values from the validation data set
 
