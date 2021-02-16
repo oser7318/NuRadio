@@ -50,24 +50,11 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     
-    plt.savefig('Confusion_Matrix.png')
+    plt.savefig(f'{title.replace(" ", "_")}.png')
+
 #Recreate validation data
 n_batches_per_file=n_events_per_file//batch_size
 
-dataset_val = tf.data.Dataset.range(n_files_val).prefetch(n_batches_per_file * 10).interleave(
-        ValDataset,
-        cycle_length=2,
-        num_parallel_calls=2,
-        deterministic=False)
-
-#Load saved model
-model=keras.models.load_model('/mnt/md0/analysis/flavor/01/saved_models/T01/model_best.h5')
-
-#Let model make predictions on validation dataset
-category_predictions = model.predict(dataset_val, batch_size=batch_size)
-category_predictions = np.argmax(category_predictions, axis=1)
-
-#Extract the true category values from the validation data set
 i_file = list_of_file_ids_val[0]
 
 val_data, true_category = load_file(i_file)
@@ -76,6 +63,15 @@ true_category=np.argmax(true_category,axis=1)
 
 comp_true_category = true_category[0:10000]
 comp_predicted_category = category_predictions[0:10000]
+
+#Load saved model
+model=keras.models.load_model('/mnt/md0/analysis/flavor/01/saved_models/T01/model_best.h5')
+
+#Let model make predictions on validation dataset
+category_predictions = model.predict(val_data, batch_size=batch_size)
+category_predictions = np.argmax(category_predictions, axis=1)
+
+#Extract the true category values from the validation data set
 
 #Create confusion matrix using scikit learn built in confusion matrix function
 cm = confusion_matrix(y_true=comp_true_category, y_pred=comp_predicted_category)
