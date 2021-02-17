@@ -41,37 +41,37 @@ def load_file(i_file, type='default' norm=norm):
 
     def load_file(i_file, type='default', norm=norm):
 
-    if type == 'default':
-    #     t0 = time.time()
-        print(f"loading file {i_file}", flush=True)
-        data = np.load(os.path.join(datapath, f"data_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), $
-        labels_tmp = np.load(os.path.join(datapath, f"labels_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}$
-    #     print(f"finished loading file {i_file} in {time.time() - t0}s")
-    #     print(labels_tmp.item().keys())
-        shower_energy_em = np.array(labels_tmp.item()["shower_energy_em"])
-        mask = shower_energy_em == 0
+        if type == 'default':
+        #     t0 = time.time()
+            print(f"loading file {i_file}", flush=True)
+            data = np.load(os.path.join(datapath, f"data_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), $
+            labels_tmp = np.load(os.path.join(datapath, f"labels_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}$
+        #     print(f"finished loading file {i_file} in {time.time() - t0}s")
+        #     print(labels_tmp.item().keys())
+            shower_energy_em = np.array(labels_tmp.item()["shower_energy_em"])
+            mask = shower_energy_em == 0
 
-        label_onehot = np.zeros((len(shower_energy_em), 2), dtype=np.int)
-        label_onehot[mask, 0] = 1
-        label_onehot[~mask, 1] = 1
+            label_onehot = np.zeros((len(shower_energy_em), 2), dtype=np.int)
+            label_onehot[mask, 0] = 1
+            label_onehot[~mask, 1] = 1
 
-        # check for nans and remove them
-        idx = ~(np.isnan(data))
-        idx = np.all(idx, axis=1)
-        idx = np.all(idx, axis=1)
-        idx = np.all(idx, axis=1)
-        data = data[idx, :, :, :]
-        data /= norm
-    #     print(f"finished processing file {i_file} in {time.time() - t0}s")
+            # check for nans and remove them
+            idx = ~(np.isnan(data))
+            idx = np.all(idx, axis=1)
+            idx = np.all(idx, axis=1)
+            idx = np.all(idx, axis=1)
+            data = data[idx, :, :, :]
+            data /= norm
+        #     print(f"finished processing file {i_file} in {time.time() - t0}s")
 
-        return data, label_onehot[idx, :]
-        
-    elif type == 'nonoise':
+            return data, label_onehot[idx, :]
+            
+        elif type == 'nonoise':
 
-        print(f"loading file {i_file}", flush=True)
+            print(f"loading file {i_file}", flush=True)
 
-        data = np.load(os.path.join(datapath, f"data_simple2_nonoise_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_f$
-        return data
+            data = np.load(os.path.join(datapath, f"data_simple2_nonoise_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_f$
+            return data
 
 class TrainDataset(tf.data.Dataset):
 
