@@ -39,11 +39,13 @@ def spherical_to_cartesian(zenith, azimuth):
 
 def load_file(i_file, type='default' norm=norm):
 
-    if type = 'default':
+    def load_file(i_file, type='default', norm=norm):
+
+    if type == 'default':
     #     t0 = time.time()
         print(f"loading file {i_file}", flush=True)
-        data = np.load(os.path.join(datapath, f"data_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), allow_pickle=True)[:, :, :, np.newaxis]
-        labels_tmp = np.load(os.path.join(datapath, f"labels_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), allow_pickle=True)
+        data = np.load(os.path.join(datapath, f"data_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), $
+        labels_tmp = np.load(os.path.join(datapath, f"labels_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}$
     #     print(f"finished loading file {i_file} in {time.time() - t0}s")
     #     print(labels_tmp.item().keys())
         shower_energy_em = np.array(labels_tmp.item()["shower_energy_em"])
@@ -64,14 +66,11 @@ def load_file(i_file, type='default' norm=norm):
 
         return data, label_onehot[idx, :]
         
-    elif type = 'nonoise':
-        
+    elif type == 'nonoise':
+
         print(f"loading file {i_file}", flush=True)
-        data = np.load(os.path.join(datapath, f"data_simple_nonoise_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), allow_pickle=True)[:, :, :, np.newaxis]
-            
-        # check for nans and remove them
-        data = data[idx, :, :, :]
-        data /= norm
+
+        data = np.load(os.path.join(datapath, f"data_simple2_nonoise_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_f$
         return data
 
 class TrainDataset(tf.data.Dataset):
