@@ -1,0 +1,5 @@
+Server IP: 130.238.68.22
+Password: sAUfZV57BhchoRaD
+
+Copy file from server onto local:
+scp -i ~/.ssh/id_rsa.pub oericsson@130.238.68.22:/mnt/md0/oericsson/NuRadio/<FILENAME> ~/NuRadio-1

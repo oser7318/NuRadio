@@ -13,11 +13,11 @@ for device in physical_devices:
     tf.config.experimental.set_memory_growth(device, True) 
 
 from tensorflow import keras
-from generator import TrainDataset, ValDataset, list_of_file_ids_val, n_events_per_file, n_files_train, n_files_val, batch_size, load_file
+from generator import list_of_file_ids_test, n_events_per_file, n_files_train, n_files_val, batch_size, TestDataset
 from sklearn.metrics import confusion_matrix
 
 def plot_confusion_matrix(cm, classes,
-                        normalize=False,
+                        normalize="all",
                         title='Confusion matrix',
                         cmap=plt.cm.Blues):
     """
@@ -52,30 +52,25 @@ def plot_confusion_matrix(cm, classes,
     
     plt.savefig(f'{title.replace(" ", "_")}.png')
 
-#Recreate validation data
-n_batches_per_file=n_events_per_file//batch_size
 
-i_file = list_of_file_ids_val[0]
-
-val_data, true_category = load_file(i_file)
+test_data, true_category = TestDataset(10)
 
 true_category=np.argmax(true_category,axis=1)
 
 #Load saved model
-model=keras.models.load_model('/mnt/md0/analysis/flavor/01/saved_models/T01/model_best.h5')
+model=keras.models.load_model('/mnt/md0/oericsson/NuRadio/saved_models/NuFlavorCNN/model_best.h5')
 
 #Let model make predictions on validation dataset
-category_predictions = model.predict(val_data, batch_size=batch_size)
+category_predictions = model.predict(test_data, batch_size=batch_size)
 category_predictions = np.argmax(category_predictions, axis=1)
 
 comp_true_category = true_category[0:10000]
 comp_predicted_category = category_predictions[0:10000]
 
-#Extract the true category values from the validation data set
 
 #Create confusion matrix using scikit learn built in confusion matrix function
 cm = confusion_matrix(y_true=comp_true_category, y_pred=comp_predicted_category)
-cm_plot_labels = ['Hadronic only', 'EM + Hadronic']
+cm_plot_labels = ['mu/tau', 'e']
 
 #Plot the confusion matrix
 plot_confusion_matrix(cm=cm, classes=cm_plot_labels, title='Confusion matrix for T01')

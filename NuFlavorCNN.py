@@ -35,7 +35,7 @@ import pickle
 import os
 import matplotlib.pyplot as plt
 import time
-from generator import TrainDatasetNoiseless, ValDatasetNoiseless, n_events_per_file, n_files_train, n_files_val, batch_size, load_file
+from generator import TrainDatasetEven, ValDatasetEven, n_events_per_file, n_files_train, n_files_val, batch_size, load_file
 
 import wandb
 from wandb.keras import WandbCallback
@@ -55,8 +55,7 @@ def conv_block(nlayers=1, nfilters=1, dropout=False, **kwargs):
     """ Add block of convolutional layers of specified number of filters, with or without dropout """
 
     for _ in range(nlayers):
-        model.add(Conv2D(nfilters, (1,10), padding="same", kernel_initializer="he_normal", **kwargs))
-        model.add(BatchNormalization())
+        model.add(Conv2D(nfilters, (1,3), padding="same", kernel_initializer="he_normal", **kwargs))
         model.add(Activation("relu"))
 
     if dropout:
@@ -77,21 +76,33 @@ conv_block(2, 128, dropout=0.2)
 conv_block(128)
 conv_block(2, 256, dropout=0.2)
 conv_block(256)
+#10 total conv2d layers
 
 #Dense
 model.add(Flatten())
-model.add(Dropout(0.5))
-model.add(Dense(256))
-model.add(layers.BatchNormalization())
+
+model.add(Dense(5 * 512))
 model.add(Activation("relu"))
 model.add(Dropout(0.5))
+
+model.add(Dense(5 * 512))
+model.add(Activation("relu"))
+model.add(Dropout(0.5))
+
+model.add(Dense(1024))
+model.add(Activation("relu"))
+model.add(Dropout(0.5))
+
+model.add(Dense(256))
+model.add(Activation("relu"))
+
 model.add(Dense(128))
 model.add(Activation("relu"))
-model.add(Dropout(0.4))
+
 model.add(Dense(2))
 model.add(Activation("softmax"))
 
-model.compile(loss='categorical_crossentropy',
+model.compile(loss='categorical_crosentropy',
               optimizer=Adam(learning_rate=1e-3),
               metrics=["accuracy"])
 model.summary()
@@ -119,8 +130,8 @@ dataset_val = tf.data.Dataset.range(n_files_val).prefetch(n_batches_per_file * 1
         num_parallel_calls=2,
         deterministic=False)
 
-history = model.fit(x=dataset_train, class_weight = d_class_weights, steps_per_epoch=steps_per_epoch, epochs=20,
+history = model.fit(x=dataset_train, steps_per_epoch=steps_per_epoch, epochs=20,
           validation_data=dataset_val, callbacks=[checkpoint, csv_logger, WandbCallback()])
 with open(os.path.join('saved_models', filename, 'history.pkl'), 'wb') as file_pi:
     pickle.dump(history.history, file_pi)
-
+    
