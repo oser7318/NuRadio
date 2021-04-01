@@ -22,9 +22,9 @@ norm = 1e-6
 n_files_val = int(0.1 * n_files)
 # n_files_val = 10
 n_files_train = n_files - n_files_val - n_files_test
-list_of_file_ids_train = np.arange(start=1, stop=1+n_files_train, dtype=np.int)
-list_of_file_ids_val = np.arange(start=1+n_files_train, stop=1+n_files_train + n_files_val, dtype=np.int)
-list_of_file_ids_test = np.arange(1+n_files_train + n_files_val, n_files, dtype=np.int)
+list_of_file_ids_train = np.arange(n_files_train, dtype=np.int)
+list_of_file_ids_val = np.arange(n_files_train, n_files_train + n_files_val, dtype=np.int)
+list_of_file_ids_test = np.arange(n_files_train + n_files_val, n_files, dtype=np.int)
 n_events_per_file = 100000
 batch_size = 64 #Original value was 64
 
