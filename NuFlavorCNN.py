@@ -51,17 +51,17 @@ if not os.path.exists(path):
     os.makedirs(path)
 
 
-def conv_block(nlayers=1, nfilters=1, dropout=False, **kwargs):
+def conv_block(nfilters, nlayers=1, dropout=False, **kwargs):
     """ Add block of convolutional layers of specified number of filters, with or without dropout """
 
     for _ in range(nlayers):
-        model.add(Conv2D(nfilters, (1,3), padding="same", kernel_initializer="he_normal", **kwargs))
+        model.add(Conv2D(nfilters, (3,3), padding="same", kernel_initializer="he_normal", **kwargs))
         model.add(Activation("relu"))
 
     if dropout:
         model.add(Dropout(dropout))
     else: 
-        model.add(MaxPooling2D((1,2), padding="same") )
+        model.add(MaxPooling2D((2,2), padding="same") )
 
 
 #-----------Define Model------------
@@ -72,9 +72,9 @@ conv_block(32, dropout=0.2, input_shape=(5, 512, 1))
 conv_block(32)
 conv_block(64, dropout=0.2)
 conv_block(64)
-conv_block(2, 128, dropout=0.2)
+conv_block(128, nlayers=2, dropout=0.2)
 conv_block(128)
-conv_block(2, 256, dropout=0.2)
+conv_block(256, nlayers=2, dropout=0.2)
 conv_block(256)
 #10 total conv2d layers
 
@@ -102,7 +102,7 @@ model.add(Activation("relu"))
 model.add(Dense(2))
 model.add(Activation("softmax"))
 
-model.compile(loss='categorical_crosentropy',
+model.compile(loss='categorical_crossentropy',
               optimizer=Adam(learning_rate=1e-3),
               metrics=["accuracy"])
 model.summary()
@@ -134,4 +134,4 @@ history = model.fit(x=dataset_train, steps_per_epoch=steps_per_epoch, epochs=20,
           validation_data=dataset_val, callbacks=[checkpoint, csv_logger, WandbCallback()])
 with open(os.path.join('saved_models', filename, 'history.pkl'), 'wb') as file_pi:
     pickle.dump(history.history, file_pi)
-    
+
