@@ -119,10 +119,6 @@ def TestDataset(file_id):
         #Shuffle using sklearn.utils.shuffle, which leaves the imput array intact (creates a copy but shuffeled)
         #data_combined, labels_combined = shuffle(data_combined, labels_combined, random_state=0)
 
-        #Cut the combined data array in half? / Save only first 100 000 events in combined array? DO RUNS WITH CUT (100k) AND 200k EVENT ARRAYS AND SEE WHAT HAPPENS!
-        data_combined = data_combined[0:100000]
-        labels_combined = labels_combined[0:100000]
-
         return data_combined, labels_combined
 
 class TrainDatasetEven(tf.data.Dataset):
@@ -145,10 +141,6 @@ class TrainDatasetEven(tf.data.Dataset):
 
         #Shuffle using sklearn.utils.shuffle, which leaves the imput array intact (creates a copy but shuffeled)
         #data_combined, labels_combined = shuffle(data_combined, labels_combined, random_state=0)
-
-        #Cut the combined data array in half? / Save only first 100 000 events in combined array? DO RUNS WITH CUT (100k) AND 200k EVENT ARRAYS AND SEE WHAT HAPPENS!
-        data_combined = data_combined[0:100000]
-        labels_combined = labels_combined[0:100000]
 
         num_samples = data_combined.shape[0]
         rand_ids = np.arange(num_samples, dtype=np.int)
@@ -190,10 +182,6 @@ class ValDatasetEven(tf.data.Dataset):
         
         #Shuffle using sklearn.utils.shuffle, which leaves the imput array intact (creates a copy but shuffeled)
         #data_combined, labels_combined = shuffle(data_combined, labels_combined, random_state=0)
-
-        #Cut the combined data array in half? / Save only first 100 000 events in combined array? DO RUNS WITH CUT (100k) AND 200k EVENT ARRAYS AND SEE WHAT HAPPENS!
-        data_combined = data_combined[0:100000]
-        labels_combined = labels_combined[0:100000]
 
         num_samples = data_combined.shape[0]
         rand_ids = np.arange(num_samples, dtype=np.int)
