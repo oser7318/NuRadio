@@ -4,8 +4,6 @@ import tensorflow as tf
 import time
 from sklearn.utils import shuffle
 
-np.set_printoptions(precision=4)
-
 #Category separated Noiseless data
 #datapath = "/mnt/md0/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband/noiseless"
 
@@ -15,11 +13,11 @@ np.set_printoptions(precision=4)
 #Original "old" data
 #datapath = "/mnt/md0/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband" 
 
-n_files = 10
+n_files = 100
 # n_files = 10
 n_files_test = 1
 norm = 1e-6
-n_files_val = int(0.1 * n_files)
+n_files_val = int(0.2 * n_files)
 # n_files_val = 10
 n_files_train = n_files - n_files_val - n_files_test
 list_of_file_ids_train = np.arange(n_files_train, dtype=np.int)
@@ -103,20 +101,29 @@ def shuffle_same(a,b):
     np.random.set_state(rng_state)
     np.random.shuffle(b)      
 
-def TestDataset(file_id):
+def TestDataset(noise=False):
     
-        i_file = file_id
-        data_had, labels_had = load_file(i_file, noise=False, em=False, norm=norm) #Choose noisy or noiseless data
-        data_emhad, labels_emhad = load_file(i_file, noise=False, em=True, norm=norm) 
+        i_file = list_of_file_ids_test[0]
+
+        if noise: 
+            data_had, labels_had = load_file(i_file, noise=True, em=False, norm=norm) #Choose noisy or noiseless data
+            data_emhad, labels_emhad = load_file(i_file, noise=True, em=True, norm=norm) 
+
+        elif not noise:
+            data_had, labels_had = load_file(i_file, noise=False, em=False, norm=norm) #Choose noisy or noiseless data
+            data_emhad, labels_emhad = load_file(i_file, noise=False, em=True, norm=norm) 
 
         #Joint data array (not shuffeled and doubble size of constituent data)
         data_combined = np.concatenate( (data_had, data_emhad), axis=0)
         labels_combined = np.concatenate( (labels_had, labels_emhad), axis=0)
-              
+                
         #Shuffle using shuffle_same(a,b)
         shuffle_same(data_combined,labels_combined)
-        
-        #Shuffle using sklearn.utils.shuffle, which leaves the imput array intact (creates a copy but shuffeled)
+
+        data_combined = data_combined[0:10000]
+        labels_combined = labels_combined[0:10000]
+            
+         #Shuffle using sklearn.utils.shuffle, which leaves the imput array intact (creates a copy but shuffeled)
         #data_combined, labels_combined = shuffle(data_combined, labels_combined, random_state=0)
 
         return data_combined, labels_combined
