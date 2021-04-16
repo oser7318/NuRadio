@@ -66,12 +66,12 @@ model=keras.models.load_model('/mnt/md0/oericsson/NuRadio/saved_models/NuFlavorC
 category_predictions = model.predict(test_data, batch_size=batch_size)
 category_predictions = np.argmax(category_predictions, axis=1) #what index the max value is at. 1 means [0,1] (e cc), 0 means [1,0] (NCs and mu/tau cc)
 
-comp_true_category = true_category
-comp_predicted_category = category_predictions
+comparison_mask = category_predictions == true_category
+accuracy = 100 * comparison_mask.count(True)/len(comparison_mask) #Overall accuracy, counts True cases in the masked array and divides by the total number of events.
 
-
+print(f'Total accuracy: {accurcy}%')
 #Create confusion matrix using scikit learn built in confusion matrix function
-cm = confusion_matrix(y_true=comp_true_category, y_pred=comp_predicted_category)
+cm = confusion_matrix(y_true=true_category, y_pred=category_predictions)
 cm_plot_labels = ['The rest', 'e CC']
 
 #Plot the confusion matrix

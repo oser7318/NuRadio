@@ -18,8 +18,8 @@ from generator import load_file, list_of_file_ids_test, batch_size
 
 #Predict from test file --> Of files with EM shower energy in some interval, what was the accuracy? 
 
-# print("Loading model...")
-# model=keras.models.load_model('/mnt/md0/oericsson/NuRadio/saved_models/NuFlavorCNN4_2/model_best.h5')
+print("Loading model...")
+model=keras.models.load_model('/mnt/md0/oericsson/NuRadio/saved_models/NuFlavorCNN4_2_NoisyData/model_best.h5')
 
 i_file=list_of_file_ids_test[0]
 
@@ -37,32 +37,35 @@ test_data, test_labels = load_file(i_file, noise=True, em=True)
 
 print("Done!")
 
-# print("Making predictons...")
+print("Making predictons...")
 
-# predictions = model.predict(test_data)
+predictions = model.predict(test_data)
 
-# print("Done!")
-#Gives category predictions, data is 100% nu_e cc interaction
-#Find indeces of energies in certain range
+print("Done!")
 
-#Some fake predictions
-predictions = np.array([[0,1]] * 100000)
-print(f'Fake predictions:{predictions}')
+#for-loop iterating over energy intervals and saving the accuracies to a list: 
+accuracy = []
+energies = [1e16, 5e16, 1e17, 5e17, 1e18, 5e18, 1e19] #For file 19: Only 41 events with shower_energy_em < 1e15, 432 events < 1e16. 
 
-indeces = np.where(shower_energy_em > 1e18) #Finds indeces of events where shower_energy_em is larger than 1e18 
-print(indeces)
-reduced_predictions = predictions[indeces] #Array consisting of predicted labels for only those events where shower_energy_em is larger than 1e18.
+for i in range(len(energies)-1):
+
+    indeces = np.where((shower_energy_em > energies[i]) & (shower_energy_em < energies[i+1])) #Finds indeces of events where shower_energy_em is in the specified interval 
+    reduced_predictions = np.argmax(predictions[indeces], axis=1) #Array consisting of argmaxed predicted labels for only those events where shower_energy_em is within the interval. i.e. 1 for e cc and 0 for the rest. 
+    reduced_test_labels = np.argmax(test_labels[indeces], axis=1)
+
+    mask_pred = reduced_predictions == reduced_test_labels
+
+    correct_predictions = np.sum(mask_pred)
+    
+    #OBS THIS ONLY WORKS FOR DATASETS OF ONLY e CC EVETNS! i.e. all events are [0,1] => argmax gives 1.
+    #correct_predictions = np.count_nonzero( np.argmax(reduced_predictions, axis=1) == 1 )
+
+    acc = 100 * correct_predictions/len(reduced_predictions)
+    accuracy.append(acc)
+
+    print(f'Energy interval: ({energies[i]},{energies[i+1]})\t Accuracy: {acc}%')
 
 
-#print(f'Predictions:\n{predictions}')
-
-correct_predictions = np.count_nonzero( np.argmax(reduced_predictions, axis=1) == 1 ) #counts the number of correct predictions (finds how many times the predicted label is [0,1] i.e. e cc interaction)
-
-print(f'Number of correct predictions:{correct_predictions}\nNumber of predictions:{len(reduced_predictions)}')
-
-accuracy = 100 * correct_predictions/len(reduced_predictions)
-
-print(f'Accuracy above 1e18 energy is {accuracy}%')
 
 
 
