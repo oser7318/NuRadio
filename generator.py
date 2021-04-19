@@ -13,7 +13,7 @@ from sklearn.utils import shuffle
 #Original "old" data
 #datapath = "/mnt/md0/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband" 
 
-n_files = 100
+n_files = 20
 # n_files = 10
 n_files_test = 1
 norm = 1e-6
@@ -52,7 +52,7 @@ def load_file(i_file, noise=True, em=True, norm=norm):
        # print(f"loading file {i_file}", flush=True)
 
 	#EM+hadronic event data
-        datapath = "/mnt/md0/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband/em_had_separately"
+        datapath = "/mnt/ssd2/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband/em_had_separately"
 
 	    #Hadronic event data
 		#data = np.load(os.path.join(datapath, f"data_had_emhad_1-3_had_1_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), allow_pickle=True)[:, :, :, np.newaxis]
@@ -60,7 +60,7 @@ def load_file(i_file, noise=True, em=True, norm=norm):
 
 
     elif noise == False:
-        datapath = "/mnt/md0/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband/noiseless"
+        datapath = "/mnt/ssd2/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband/noiseless"
 
     if em == True:
 
@@ -116,13 +116,13 @@ def TestDataset(noise=False):
         #Joint data array (not shuffeled and doubble size of constituent data)
         data_combined = np.concatenate( (data_had, data_emhad), axis=0)
         labels_combined = np.concatenate( (labels_had, labels_emhad), axis=0)
-                
+
         #Shuffle using shuffle_same(a,b)
         shuffle_same(data_combined,labels_combined)
 
-        data_combined = data_combined[0:10000]
-        labels_combined = labels_combined[0:10000]
-            
+        #data_combined = data_combined[0:10000]
+        #labels_combined = labels_combined[0:10000]
+
          #Shuffle using sklearn.utils.shuffle, which leaves the imput array intact (creates a copy but shuffeled)
         #data_combined, labels_combined = shuffle(data_combined, labels_combined, random_state=0)
 
