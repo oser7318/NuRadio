@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import itertools
-
+from math import log10
 
 import os
 from gpuutils import GpuUtils
@@ -25,7 +25,7 @@ i_file=list_of_file_ids_test[0]
 
 print("Done!\n Loading labels...")
 
-datapath = "/mnt/md0/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband/em_had_separately"
+datapath = "/mnt/ssd2/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband/em_had_separately"
 labels = np.load(os.path.join(datapath, f"labels_emhad_emhad_1-3_had_1_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), allow_pickle=True)
 shower_energy_em = np.array(labels.item()["shower_energy_em"])
 
@@ -45,7 +45,7 @@ print("Done!")
 
 #for-loop iterating over energy intervals and saving the accuracies to a list: 
 accuracy = []
-energies = [1e16, 5e16, 1e17, 5e17, 1e18, 5e18, 1e19] #For file 19: Only 41 events with shower_energy_em < 1e15, 432 events < 1e16. 
+energies = np.logspace(16, 19, 7) #For file 19: Only 41 events with shower_energy_em < 1e15, 432 events < 1e16. 
 
 for i in range(len(energies)-1):
 
@@ -65,8 +65,17 @@ for i in range(len(energies)-1):
 
     print(f'Energy interval: ({energies[i]},{energies[i+1]})\t Accuracy: {acc}%')
 
+log_energies = [log10(energy) for energy in energies]
 
+x = [ (log_energies[j]+log_energies[j+1])/2 for j in range(len(log_energies)-1) ]
 
+plt.plot(x, accuracy, 'bo')
+plt.xlim(15)
+plt.xlabel('log(E)')
+plt.ylabel('Accuracy (%)')
+plt.title('Dependence of accuracy on EM shower energy')
 
+plt.tight_layout()
+plt.savefig('EnergyDep.png')
 
-
+plt.clf()
