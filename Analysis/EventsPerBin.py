@@ -21,7 +21,7 @@ for i in range(10):
 
     for e in range(len(energies)-1):
         indeces = np.where((shower_energy_em > energies[e]) & (shower_energy_em < energies[e+1]))
-        cases_had_larger[e] = np.sum(shower_energy_had[indeces] > shower_energy_em[indeces])
+        cases_had_larger[e] += np.sum(shower_energy_had[indeces] > shower_energy_em[indeces])
         counts[e] += len(indeces[0])
         
 
