@@ -15,11 +15,11 @@ np.set_printoptions(precision=4)
 #Original "old" data
 #datapath = "/mnt/md0/data/SouthPole/single_surface_4LPDA_PA_15m_RNOG_fullsim.json/ARZ2020_emhad_noise.yaml/G03generate_events_full_surface_sim/LPDA_2of4_100Hz/4LPDA_1dipole_fullband" 
 
-n_files = 4
+n_files = 7
 # n_files = 10
 n_files_test = 1
 norm = 1e-6
-n_files_train = 2 #int(0.8 * n_files)
+n_files_train = 5 #int(0.8 * n_files)
 # n_files_val = 10
 n_files_val = 1 #n_files - n_files_train - n_files_test
 list_of_file_ids_train = np.arange(n_files_train, dtype=np.int)
@@ -28,7 +28,7 @@ list_of_file_ids_test = np.arange(n_files_train + n_files_val, n_files, dtype=np
 n_events_per_file = 200000
 batch_size = 64 #Original value was 64
 
-NOISE=True
+Noise=True
 
 print(f"training on {n_files_train} files ({n_files_train/n_files*100:.1f}%), validating on {n_files_val} files ({n_files_val/n_files*100:.1f}%), testing on {n_files_test} files ({n_files_test/n_files*100:.1f}%)")
 
@@ -95,15 +95,17 @@ def load_file(i_file, noise=True, em=True, norm=norm):
     data = data[idx, :, :, :]
     data /= norm
     
+    print(f'Data shape: {data.shape}\t Labels shape: {label_onehot[idx, :].shape}')
+    
     return data, label_onehot[idx, :]
 
-#Shuffle function that alters states of a and b in the same way, no copies created.
-def shuffle_same(a,b):
+# #Shuffle function that alters states of a and b in the same way, no copies created.
+# def shuffle_same(a,b):
     
-    rng_state = np.random.get_state()
-    np.random.shuffle(a)
-    np.random.set_state(rng_state)
-    np.random.shuffle(b)
+#     rng_state = np.random.get_state()
+#     np.random.shuffle(a)
+#     np.random.set_state(rng_state)
+#     np.random.shuffle(b)
 
 def TestDataset(noise=False):
     
@@ -122,7 +124,7 @@ def TestDataset(noise=False):
         labels_combined = np.concatenate( (labels_had, labels_emhad), axis=0)
 
         #Shuffle using shuffle_same(a,b)
-        shuffle_same(data_combined,labels_combined)
+        #shuffle_same(data_combined,labels_combined)
 
         #data_combined = data_combined[0:10000]
         #labels_combined = labels_combined[0:10000]
@@ -140,15 +142,15 @@ class TrainDatasetEven(tf.data.Dataset):
             np.random.shuffle(list_of_file_ids_train)
 
         i_file = list_of_file_ids_train[file_id]
-        data_had, labels_had = load_file(i_file, noise=NOISE, em=False, norm=norm) #Choose noisy or noiseless data
-        data_emhad, labels_emhad = load_file(i_file, noise=NOISE, em=True, norm=norm) 
+        data_had, labels_had = load_file(i_file, noise=Noise, em=False, norm=norm) #Choose noisy or noiseless data
+        data_emhad, labels_emhad = load_file(i_file, noise=Noise, em=True, norm=norm) 
 
         #Joint data array (not shuffeled and doubble size of constituent data)
         data_combined = np.concatenate( (data_had, data_emhad), axis=0)
         labels_combined = np.concatenate( (labels_had, labels_emhad), axis=0)
 
         #Shuffle using shuffle_same(a,b)
-        shuffle_same(data_combined,labels_combined)
+        #shuffle_same(data_combined,labels_combined)
 
         #Shuffle using sklearn.utils.shuffle, which leaves the imput array intact (creates a copy but shuffeled)
         #data_combined, labels_combined = shuffle(data_combined, labels_combined, random_state=0)
@@ -184,15 +186,15 @@ class ValDatasetEven(tf.data.Dataset):
             np.random.shuffle(list_of_file_ids_val)
 
         i_file = list_of_file_ids_val[file_id]
-        data_had, labels_had = load_file(i_file, noise=NOISE, em=False, norm=norm) #Choose noisy or noiseless data
-        data_emhad, labels_emhad = load_file(i_file, noise=NOISE, em=True, norm=norm) 
+        data_had, labels_had = load_file(i_file, noise=Noise, em=False, norm=norm) #Choose noisy or noiseless data
+        data_emhad, labels_emhad = load_file(i_file, noise=Noise, em=True, norm=norm) 
 
         #Joint data array (not shuffeled and doubble size of constituent data)
         data_combined = np.concatenate( (data_had, data_emhad), axis=0)
         labels_combined = np.concatenate( (labels_had, labels_emhad), axis=0)
 
         #Shuffle using shuffle_same(a,b)
-        shuffle_same(data_combined,labels_combined)
+        #shuffle_same(data_combined,labels_combined)
 
         #Shuffle using sklearn.utils.shuffle, which leaves the imput array intact (creates a copy but shuffeled)
         #data_combined, labels_combined = shuffle(data_combined, labels_combined, random_state=0)
