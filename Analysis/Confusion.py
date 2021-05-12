@@ -60,19 +60,19 @@ test_data, true_category = TestDataset(noise=True)
 true_category=np.argmax(true_category,axis=1) #what index the max value is at. 1 means [0,1], 0 means [1,0]
 
 #Load saved model
-model=keras.models.load_model('/mnt/md0/oericsson/NuRadio/saved_models/NuFlavorCNN4_2_NoisyData/model_best.h5')
+model=keras.models.load_model('/mnt/md0/oericsson/NuRadio/saved_models/NuFlavorCNN8.21File/model_best.h5')
 
 #Let model make predictions on validation dataset
 category_predictions = model.predict(test_data, batch_size=batch_size)
 category_predictions = np.argmax(category_predictions, axis=1) #what index the max value is at. 1 means [0,1] (e cc), 0 means [1,0] (NCs and mu/tau cc)
 
 comparison_mask = category_predictions == true_category
-accuracy = 100 * comparison_mask.count(True)/len(comparison_mask) #Overall accuracy, counts True cases in the masked array and divides by the total number of events.
+accuracy = 100 * sum(comparison_mask)/len(comparison_mask) #Overall accuracy, counts True cases in the masked array and divides by the total number of events.
 
-print(f'Total accuracy: {accurcy}%')
+print(f'Total accuracy: {accuracy}%')
 #Create confusion matrix using scikit learn built in confusion matrix function
 cm = confusion_matrix(y_true=true_category, y_pred=category_predictions)
 cm_plot_labels = ['The rest', 'e CC']
 
 #Plot the confusion matrix
-plot_confusion_matrix(cm=cm, classes=cm_plot_labels, title='Confusion matrix NuFlavorCNN 4.2 Noisy')
+plot_confusion_matrix(cm=cm, classes=cm_plot_labels, title='Confusion matrix for best model')

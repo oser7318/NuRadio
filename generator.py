@@ -80,6 +80,7 @@ def load_file(i_file, noise=True, em=True, norm=norm):
 #		data = np.load(os.path.join(datapath, f"data_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), allow_pickle=True)[:, :, :, np.newaxis]
 #       labels_tmp = np.load(os.path.join(datapath, f"labels_1-3_LPDA_2of4_100Hz_4LPDA_1dipole_fullband_{i_file:04d}.npy"), allow_pickle=True)
     
+    nu_energy = np.array(labels_tmp.item()["nu_energy"])
     shower_energy_em = np.array(labels_tmp.item()["shower_energy_em"])
     mask = shower_energy_em == 0
 
@@ -94,10 +95,12 @@ def load_file(i_file, noise=True, em=True, norm=norm):
     idx = np.all(idx, axis=1)
     data = data[idx, :, :, :]
     data /= norm
-    
+
+    labels_out = [label_onehot[idx, :], shower_energy_em[idx], nu_energy[idx]]
+
     print(f'Data shape: {data.shape}\t Labels shape: {label_onehot[idx, :].shape}')
     
-    return data, label_onehot[idx, :]
+    return data, labels_out #label_onehot[idx, :]
 
 # #Shuffle function that alters states of a and b in the same way, no copies created.
 # def shuffle_same(a,b):
@@ -121,7 +124,7 @@ def TestDataset(noise=False):
 
         #Joint data array (not shuffeled and doubble size of constituent data)
         data_combined = np.concatenate( (data_had, data_emhad), axis=0)
-        labels_combined = np.concatenate( (labels_had, labels_emhad), axis=0)
+        labels_combined = np.concatenate( (labels_had[0], labels_emhad[0]), axis=0)
 
         #Shuffle using shuffle_same(a,b)
         #shuffle_same(data_combined,labels_combined)
@@ -147,7 +150,7 @@ class TrainDatasetEven(tf.data.Dataset):
 
         #Joint data array (not shuffeled and doubble size of constituent data)
         data_combined = np.concatenate( (data_had, data_emhad), axis=0)
-        labels_combined = np.concatenate( (labels_had, labels_emhad), axis=0)
+        labels_combined = np.concatenate( (labels_had[0], labels_emhad[0]), axis=0)
 
         #Shuffle using shuffle_same(a,b)
         #shuffle_same(data_combined,labels_combined)
@@ -191,7 +194,7 @@ class ValDatasetEven(tf.data.Dataset):
 
         #Joint data array (not shuffeled and doubble size of constituent data)
         data_combined = np.concatenate( (data_had, data_emhad), axis=0)
-        labels_combined = np.concatenate( (labels_had, labels_emhad), axis=0)
+        labels_combined = np.concatenate( (labels_had[0], labels_emhad[0]), axis=0)
 
         #Shuffle using shuffle_same(a,b)
         #shuffle_same(data_combined,labels_combined)
