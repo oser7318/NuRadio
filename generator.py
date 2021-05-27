@@ -98,7 +98,7 @@ def load_file(i_file, noise=True, em=True, norm=norm):
 
     labels_out = [label_onehot[idx, :], shower_energy_em[idx], nu_energy[idx]]
 
-    print(f'Data shape: {data.shape}\t Labels shape: {label_onehot[idx, :].shape}')
+    #print(f'Data shape: {data.shape}\t Labels shape: {label_onehot[idx, :].shape}')
     
     return data, labels_out #label_onehot[idx, :]
 

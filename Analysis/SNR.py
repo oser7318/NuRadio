@@ -22,12 +22,12 @@ data, labels = load_file(i_file, noise=True, em=True)
 max_LPDA = np.max(np.max(np.abs(data[:, :, 0:4]), axis=1), axis=1)
 SNR = max_LPDA[:,0]/10 
 
-predictions = model.predict(data)
+predictions = model.predict(data, batch_size=64)
 
 #----SNR Bins----
 #4 events with SNR<1. min(SNR) = 0.9250, max(SNR)=271.1495. 98841 events in interval 1<SNR<5.
 
-SNR_bins = np.linspace(1, 10, num=37 endpoint=True) #np.array([min(SNR), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, max(SNR)])
+SNR_bins = np.append(np.linspace(1, 5, num=17), 10) #np.array([min(SNR), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, max(SNR)])
 
 #ind = np.where((SNR>=min(SNR)) & (SNR<1.5))
 accuracy = []
@@ -49,22 +49,42 @@ for i in range(len(SNR_bins)-1):
 
     acc = 100 * correct_predictions/len(reduced_predictions)
     accuracy.append(acc)
-    events_current_bin = len(indeces)
+    events_current_bin = len(indeces[0])
     events_per_bin.append(events_current_bin)
     print(f'SNR interval: ({SNR_bins[i]},{SNR_bins[i+1]})\t Accuracy: {acc}%')
 
 SNR_bin_points = [ (SNR_bins[j]+SNR_bins[j+1])/2 for j in range(len(SNR_bins)-1) ]
 #SNR_bin_points.append(15+16/2)
 
-# min_err = np.ones(15)*0.5
-# pos_err = np.ones(15)*0.5
-# pos_err[-1] = 0
+min_err = np.ones(17)*0.125
+pos_err = np.ones(17)*0.125
+pos_err[-1] = 2.5
+min_err[-1] = 2.5
+xerr=[min_err, pos_err]
 
-plt.errorbar(SNR_bin_points, accuracy, xerr=((SNR_bins[0]+SNR_bins[1])/2), fmt='bo', capsize=5, elinewidth=1, markeredgewidth=1)
-plt.ylim(0,100)
+plt.figure()
+
+ax1 = plt.gca()
+p1=ax1.errorbar(SNR_bin_points, accuracy, xerr=xerr, fmt='b*', capsize=3, elinewidth=1, markeredgewidth=1, label="Accuracy in bin (%)")
+ax1.set_ylim(0,100)
+ax1.set_xlabel("SNR")
+ax1.set_ylabel("Percentage $\u03BD_e$ CC events classified as such")
+#ax1.legend(loc=0)
+
+ax2 = ax1.twinx()
+p2=ax2.errorbar(SNR_bin_points, events_per_bin, xerr=xerr, fmt='*', capsize=3, elinewidth=1, markeredgewidth=1, color='orange', label="Events in bin")
+ax2.set_yscale("log")
+#ax2.legend()
+ax2.set_ylabel("Events")
+
+p = [p1,p2]
+labs = [l.get_label() for l in p]
+ax1.legend(p, labs, loc="lower right")
+# plt.errorbar(SNR_bin_points, accuracy, xerr=xerr, fmt='bo', capsize=5, elinewidth=1, markeredgewidth=1)
+# plt.errorbar(SNR_bin_points, events_per_bin, xerr=xerr, fmt='*', color='orange')
+
 plt.xlabel('SNR')
-plt.ylabel('Percentage $\u03BD_e$ CC events classified as such')
-plt.title('Dependence of accuracy on signal-to-noise ratio (SNR)')
+plt.title('Accuracy as a function of signal-to-noise ratio (SNR)\nand number of events in each bin')
 
 plt.tight_layout()
 plt.savefig('SNR_EM.png')
